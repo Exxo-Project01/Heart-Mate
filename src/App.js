@@ -252,7 +252,7 @@ export default class App extends Component<Props, State> {
   async _requestRecordAudioPermission() {
     try {
       const granted = await PermissionsAndroid.request(
-        (PermissionsAndroid.PERMISSIONS.RECORD_AUDIO && PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE && PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE),
+        (PermissionsAndroid.PERMISSIONS.RECORD_AUDIO),
         {
           title: 'Microphone Permission',
           message: 'ExampleApp needs access to your microphone to test react-native-audio-toolkit.',
