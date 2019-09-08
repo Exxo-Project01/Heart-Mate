@@ -10,6 +10,7 @@ import React, { Component } from 'react';
 import { Modal, Alert, Button, PermissionsAndroid, Platform, SafeAreaView, StyleSheet, Switch, Text, View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Player, Recorder, MediaStates } from '@react-native-community/audio-toolkit';
+import { LineChart, Grid } from 'react-native-svg-charts'
 var RNFS = require('react-native-fs');
 import { db } from './config/firebase';
 var RNFetchBlob = require('react-native-fetch-blob').default
@@ -27,8 +28,9 @@ type State = {
 
   loopButtonStatus: boolean,
   progress: number,
-
-  error: string | null
+  data: [],
+  error: string | null,
+  plot: false,
 };
 
 export default class App extends Component<Props, State> {
@@ -50,7 +52,7 @@ export default class App extends Component<Props, State> {
 
       loopButtonStatus: false,
       progress: 0,
-
+      data: [10,12],
       error: null
     };
   }
@@ -100,6 +102,7 @@ export default class App extends Component<Props, State> {
         this.setState({
           error: err.message
         });
+        console.log(err)
       }
       this._updateState();
     });
@@ -214,7 +217,7 @@ export default class App extends Component<Props, State> {
       recordAudioRequest = new Promise(function (resolve, reject) { resolve(true); });
     }
 
-
+    
     readfileRequest.then((hasPermission) => {
       if (!hasPermission) {
         this.setState({
@@ -224,6 +227,7 @@ export default class App extends Component<Props, State> {
       }
 
       this.recorder.prepare((err) => {
+        console.log(this.recorder.fsPath)
         if (!err) {
           //this.recorder.fspath shoud be the path to audio file
           RNFetchBlob.fs.readFile(this.recorder.fsPath, 'base64')
@@ -244,10 +248,15 @@ export default class App extends Component<Props, State> {
     )
   }
 
+  async _soundWavePlotter(){
+    //doPlot = this.state.plot
+    let data = this.state.data
+    data.push(Math.floor(Math.random()*20))
 
-
-
-
+    if(data.length>50){
+      data.shift() 
+    } 
+  }
 
   async _requestRecordAudioPermission() {
     try {
@@ -306,6 +315,8 @@ export default class App extends Component<Props, State> {
   }
 
   render() {
+    let data = this.state.data
+    
     return (
       <SafeAreaView>
         <View>
@@ -313,7 +324,7 @@ export default class App extends Component<Props, State> {
             Playback
           </Text>
         </View>
-        <View >
+        <View>
           <Button title={this.state.playPauseButton} disabled={this.state.playButtonDisabled} onPress={() => this._playPause()} />
           <Button title={'Stop'} disabled={this.state.stopButtonDisabled} onPress={() => this._stop()} />
         </View>
@@ -335,11 +346,28 @@ export default class App extends Component<Props, State> {
           <Button title={this.state.recordButton} disabled={this.state.recordButtonDisabled} onPress={() => this._toggleRecord()} />
         </View>
         <View>
+          <Text style={styles.title}>
+            Send
+          </Text>
           <Button title={'send to database'} onPress={() => this._send()} />
         </View>
         <View>
           <Text style={styles.errorMessage}>{this.state.error}</Text>
         </View>
+        <View>
+          <Text style={styles.title}>
+              Graph
+          </Text>
+          <View><Button title={'Start plot'} onPress={() => this._soundWavePlotter()} /></View>
+          <LineChart
+            style={{ height: 200 }}
+            data={data}
+            svg={{ stroke: 'rgb(134, 65, 244)' }}
+            contentInset={{ top: 20, bottom: 20 }}
+          >
+          <Grid />
+          </LineChart>
+      </View>
       </SafeAreaView>
     );
   }
