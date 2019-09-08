@@ -13,7 +13,7 @@ import { Player, Recorder, MediaStates } from '@react-native-community/audio-too
 var RNFS = require('react-native-fs');
 import { db } from './config/firebase';
 var RNFetchBlob = require('react-native-fetch-blob').default
-const filename = 'test.mp4';
+const filename = 'test.mp3';
 
 type Props = {};
 
