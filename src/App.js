@@ -207,6 +207,13 @@ export default class App extends Component<Props, State> {
     });
   }
 
+ guidGenerator() {
+    var S4 = function() {
+       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+}
+
   _send() {
 
     let readfileRequest;
@@ -234,7 +241,7 @@ export default class App extends Component<Props, State> {
             .then((data) => {
               db.ref('/users').push({
                 audio: data,
-                name: "saman",
+                name: this.guidGenerator(),
                 prediction: "positive"
               }).then(data => {
                 Alert.alert('success')
