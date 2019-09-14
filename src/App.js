@@ -8,7 +8,7 @@
 
 import React, { Component } from 'react';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { Modal, Alert, Button, PermissionsAndroid, Platform, SafeAreaView, StyleSheet, Switch, Text, View } from 'react-native';
+import { Modal, Alert, Button, PermissionsAndroid, Platform, StyleSheet, Switch, Text, View, ScrollView } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Player, Recorder, MediaStates } from '@react-native-community/audio-toolkit';
 import { LineChart, Grid } from 'react-native-svg-charts'
@@ -343,7 +343,8 @@ getresult() {
     let data = this.state.data
     
     return (
-      <SafeAreaView style={styles.page}>
+      <View style={styles.page}>
+      <ScrollView style={styles.scroll}>
          <Modal
           animationType="slide"
           transparent={false}
@@ -376,7 +377,7 @@ getresult() {
         <Text style={styles.title}>
             Get My Result
           </Text>
-          <View><Button title={'Show My Result'} onPress={() => this.getresult()} /></View>
+          <View><Button style={styles.button} title={'Show My Result'} onPress={() => this.getresult()} /></View>
         </View>:
         <View>
           <View>
@@ -385,7 +386,7 @@ getresult() {
           </Text>
         </View>
         <View>
-          <Button title={this.state.recordButton} disabled={this.state.recordButtonDisabled} onPress={() => this._toggleRecord()} />
+          <Button style={styles.button} title={this.state.recordButton} disabled={this.state.recordButtonDisabled} onPress={() => this._toggleRecord()} />
         </View>
         </View>
         }
@@ -405,19 +406,21 @@ getresult() {
           <Text style={styles.title}>
               Graph
           </Text>
-
-          <View><Button title={'Start plot'} onPress={() => this._soundWavePlotter()} /></View>
-          <LineChart
-            style={{height:hp('20%'),width:'100%', }}
-            data={data}
-            svg={{ stroke: 'rgb(134, 65, 244)' }}
-            contentInset={{ top: 20, bottom: 20 }}
-          >
+          <View><Button style={styles.button} title={'Start plot'} onPress={() => this._soundWavePlotter()} /></View></View>
+          <View style={{width:wp('80%') }}>
+            <LineChart
+              style={{height:hp('40%'),width:wp('100%') }}
+              data={data}
+              svg={{ stroke: 'rgb(134, 65, 244)' }}
+              contentInset={{ top: 20, bottom: 20 }}
+            >
           <Grid />
           </LineChart>
-      </View>
+
+            </View>
      
-      </SafeAreaView>
+      </ScrollView>
+      </View>
     );
   }
 }
@@ -425,7 +428,12 @@ getresult() {
 const styles = StyleSheet.create({
   page:{
     flex:1,
-    height:hp('70%')
+    backgroundColor: 'gray',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  scroll:{
+    padding: 20,
   },
   slider: {
     height: hp('0.5%'),
@@ -444,12 +452,15 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: 'bold',
     textAlign: 'center',
-    padding: 20,
+    padding: 10,
   },
   errorMessage: {
     fontSize: 15,
     textAlign: 'center',
     padding: 10,
     color: 'red'
-  }
+  },
+  button:{
+    width: '80%'
+  },
 });
