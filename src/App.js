@@ -7,6 +7,7 @@
  */
 
 import React, { Component } from 'react';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Modal, Alert, Button, PermissionsAndroid, Platform, SafeAreaView, StyleSheet, Switch, Text, View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Player, Recorder, MediaStates } from '@react-native-community/audio-toolkit';
@@ -49,7 +50,7 @@ export default class App extends Component<Props, State> {
       stopButtonDisabled: true,
       playButtonDisabled: true,
       recordButtonDisabled: true,
-
+modalVisible:false,
       loopButtonStatus: false,
       progress: 0,
       data: [10,12],
@@ -200,6 +201,7 @@ export default class App extends Component<Props, State> {
         if (stopped) {
           this._reloadPlayer();
           this._reloadRecorder();
+          this._send();
         }
 
         this._updateState();
@@ -214,17 +216,31 @@ export default class App extends Component<Props, State> {
     return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
 }
 
+
+getresult() {
+  return fetch('http://dummy.restapiexample.com/api/v1/employees')
+    .then((response) => response.json())
+    .then((responseJson) => {
+      this.setState({modalVisible:true})
+      console.log(responseJson)
+      return responseJson.movies;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
   _send() {
 
     let readfileRequest;
-    
+    var userid;
     if (Platform.OS == 'android') {
       readfileRequest = this._requestReadpermission();
     } else {
       recordAudioRequest = new Promise(function (resolve, reject) { resolve(true); });
     }
 
-    
+    userid=this.guidGenerator()
     readfileRequest.then((hasPermission) => {
       if (!hasPermission) {
         this.setState({
@@ -241,7 +257,7 @@ export default class App extends Component<Props, State> {
             .then((data) => {
               db.ref('/users').push({
                 audio: data,
-                name: this.guidGenerator(),
+                name: userid,
                 prediction: "positive"
               }).then(data => {
                 Alert.alert('success')
@@ -289,6 +305,8 @@ export default class App extends Component<Props, State> {
   }
 
 
+
+
   async _requestReadpermission() {
     try {
       const granted = await PermissionsAndroid.request(
@@ -325,17 +343,28 @@ export default class App extends Component<Props, State> {
     let data = this.state.data
     
     return (
-      <SafeAreaView>
-        <View>
+      <SafeAreaView style={styles.page}>
+         <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible}
+          
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            this.setState({modalVisible:false})
+
+          }}> 
+          <Text style={styles.title}>
+            {'Pending......'}
+          </Text></Modal>
+        {!this.state.playButtonDisabled ?
+        <View >
           <Text style={styles.title}>
             Playback
           </Text>
-        </View>
-        <View>
           <Button title={this.state.playPauseButton} disabled={this.state.playButtonDisabled} onPress={() => this._playPause()} />
           <Button title={'Stop'} disabled={this.state.stopButtonDisabled} onPress={() => this._stop()} />
-        </View>
-        <View style={styles.settingsContainer}>
+          <View style={styles.settingsContainer}>
           <Switch
             onValueChange={(value) => this._toggleLooping(value)}
             value={this.state.loopButtonStatus} />
@@ -344,7 +373,13 @@ export default class App extends Component<Props, State> {
         <View style={styles.slider}>
           <Slider step={0.0001} disabled={this.state.playButtonDisabled} onValueChange={(percentage) => this._seek(percentage)} value={this.state.progress} />
         </View>
+        <Text style={styles.title}>
+            Get My Result
+          </Text>
+          <View><Button title={'Show My Result'} onPress={() => this.getresult()} /></View>
+        </View>:
         <View>
+          <View>
           <Text style={styles.title}>
             Recording
           </Text>
@@ -352,12 +387,17 @@ export default class App extends Component<Props, State> {
         <View>
           <Button title={this.state.recordButton} disabled={this.state.recordButtonDisabled} onPress={() => this._toggleRecord()} />
         </View>
-        <View>
+        </View>
+        }
+        
+        
+        {/* <View>
           <Text style={styles.title}>
             Send
           </Text>
           <Button title={'send to database'} onPress={() => this._send()} />
-        </View>
+        </View> */}
+        
         <View>
           <Text style={styles.errorMessage}>{this.state.error}</Text>
         </View>
@@ -365,9 +405,10 @@ export default class App extends Component<Props, State> {
           <Text style={styles.title}>
               Graph
           </Text>
+
           <View><Button title={'Start plot'} onPress={() => this._soundWavePlotter()} /></View>
           <LineChart
-            style={{ height: 200 }}
+            style={{height:hp('20%'),width:'100%', }}
             data={data}
             svg={{ stroke: 'rgb(134, 65, 244)' }}
             contentInset={{ top: 20, bottom: 20 }}
@@ -375,14 +416,19 @@ export default class App extends Component<Props, State> {
           <Grid />
           </LineChart>
       </View>
+     
       </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  page:{
+    flex:1,
+    height:hp('70%')
+  },
   slider: {
-    height: 10,
+    height: hp('0.5%'),
     margin: 10,
     marginBottom: 50,
   },
