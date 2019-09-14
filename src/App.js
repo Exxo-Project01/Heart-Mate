@@ -380,14 +380,7 @@ getresult() {
           <View><Button style={styles.button} title={'Show My Result'} onPress={() => this.getresult()} /></View>
         </View>:
         <View>
-          <View>
-          <Text style={styles.title}>
-            Recording
-          </Text>
-        </View>
-        <View>
-          <Button style={styles.button} title={this.state.recordButton} disabled={this.state.recordButtonDisabled} onPress={() => this._toggleRecord()} />
-        </View>
+         
         </View>
         }
         
@@ -401,6 +394,14 @@ getresult() {
         
         <View>
           <Text style={styles.errorMessage}>{this.state.error}</Text>
+        </View>
+        <View>
+          <Text style={styles.title}>
+            Recording
+          </Text>
+        </View>
+        <View>
+          <Button style={styles.button} title={this.state.recordButton} disabled={this.state.recordButtonDisabled} onPress={() => this._toggleRecord()} />
         </View>
         <View>
           <Text style={styles.title}>
