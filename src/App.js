@@ -466,7 +466,8 @@ const styles = StyleSheet.create({
     color: 'red'
   },
   button:{
-    width: '80%'
+    width: '80%',
+    padding: 10
   },
   graph:{
     height:hp('40%'),
