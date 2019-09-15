@@ -16,6 +16,7 @@ var RNFS = require('react-native-fs');
 import { db } from './config/firebase';
 var RNFetchBlob = require('react-native-fetch-blob').default
 const filename = 'test.mp3';
+var userid;
 
 type Props = {};
 
@@ -44,6 +45,7 @@ export default class App extends Component<Props, State> {
     super(props);
 
     this.state = {
+      result:'Pending',
       playPauseButton: 'Preparing...',
       recordButton: 'Preparing...',
 
@@ -218,12 +220,11 @@ modalVisible:false,
 
 
 getresult() {
-  return fetch('http://dummy.restapiexample.com/api/v1/employees')
+  return fetch('https://heart-sound-discrimination.herokuapp.com/predict?user_id='+userid)
     .then((response) => response.json())
     .then((responseJson) => {
-      this.setState({modalVisible:true})
-      console.log(responseJson)
-      return responseJson.movies;
+      this.setState({modalVisible:true,result:responseJson.result})
+      return responseJson;
     })
     .catch((error) => {
       console.error(error);
@@ -233,7 +234,6 @@ getresult() {
   _send() {
 
     let readfileRequest;
-    var userid;
     if (Platform.OS == 'android') {
       readfileRequest = this._requestReadpermission();
     } else {
@@ -356,7 +356,7 @@ getresult() {
 
           }}> 
           <Text style={styles.title}>
-            {'Pending......'}
+            {this.state.result}
           </Text></Modal>
         {!this.state.playButtonDisabled ?
         <View >
