@@ -52,7 +52,7 @@ export default class App extends Component<Props, State> {
       stopButtonDisabled: true,
       playButtonDisabled: true,
       recordButtonDisabled: true,
-modalVisible:false,
+      modalVisible:false,
       loopButtonStatus: false,
       progress: 0,
       data: [10,12],
