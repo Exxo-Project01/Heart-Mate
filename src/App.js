@@ -15,7 +15,7 @@ import { LineChart, Grid } from 'react-native-svg-charts'
 var RNFS = require('react-native-fs');
 import { db } from './config/firebase';
 var RNFetchBlob = require('react-native-fetch-blob').default
-const filename = 'test.mp3';
+const filename = 'test.mp4';
 var userid;
 
 type Props = {};
@@ -255,12 +255,14 @@ getresult() {
           //this.recorder.fspath shoud be the path to audio file
           RNFetchBlob.fs.readFile(this.recorder.fsPath, 'base64')
             .then((data) => {
-              db.ref('/users').push({
+              console.log(data)
+              db.ref('/users').child(userid).set({
                 audio: data,
                 name: userid,
                 prediction: "positive"
               }).then(data => {
-                Alert.alert('success')
+                Alert.alert('Audio sent for processing')
+                
               })
             }).catch(err => {
               console.log(err)
@@ -435,10 +437,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 10,
+    padding: 5,
   },
   scroll:{
-    padding: 10,
+    padding: 20,
   },
   slider: {
     height: hp('0.5%'),
@@ -466,14 +468,11 @@ const styles = StyleSheet.create({
     color: 'red'
   },
   button:{
-    width: '80%',
+    width: '90%',
     padding: 10
   },
   graph:{
     height:hp('40%'),
     width:wp('100%'),
-    borderRadius: 4,
-    borderWidth: 0.5,
-    borderColor: '#d6d7da',
   }
 });
