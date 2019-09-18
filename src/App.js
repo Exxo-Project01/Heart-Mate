@@ -16,7 +16,7 @@ import Begin from './component/FrontAnimation'
 var RNFS = require('react-native-fs');
 import { db } from './config/firebase';
 var RNFetchBlob = require('react-native-fetch-blob').default
-const filename = 'test.mp4';
+const filename = 'test.mp3';
 var userid;
 
 type Props = {};
@@ -256,14 +256,12 @@ getresult() {
           //this.recorder.fspath shoud be the path to audio file
           RNFetchBlob.fs.readFile(this.recorder.fsPath, 'base64')
             .then((data) => {
-              console.log(data)
-              db.ref('/users').child(userid).set({
+              db.ref('/users').push({
                 audio: data,
                 name: userid,
                 prediction: "positive"
               }).then(data => {
-                Alert.alert('Audio sent for processing')
-                
+                Alert.alert('success')
               })
             }).catch(err => {
               console.log(err)
@@ -351,7 +349,7 @@ getresult() {
         <Begin></Begin>
          <Modal
           animationType="slide"
-          transparent={true}
+          transparent={false}
           visible={this.state.modalVisible}
           
           onRequestClose={() => {
@@ -362,21 +360,6 @@ getresult() {
           <Text style={styles.title}>
             {this.state.result}
           </Text></Modal>
-          <View>
-          <Text style={styles.errorMessage}>{this.state.error}</Text>
-        </View>
-        <View>
-          <Text style={styles.title}>
-            Recording
-          </Text>
-        </View>
-        <View>
-          <Button style={styles.button} title={this.state.recordButton} disabled={this.state.recordButtonDisabled} onPress={() => this._toggleRecord()} />
-        </View>
-        <View><Text style={styles.title}>
-            Get My Result
-          </Text></View>
-          <View><Button style={styles.button} title={'Show My Result'} onPress={() => this.getresult()} /></View>
         {!this.state.playButtonDisabled ?
         <View >
            <View style={styles.slider}>
@@ -389,11 +372,9 @@ getresult() {
                     </View>
 
         </View>
-
-          <Button style={{width:10}} title={this.state.playPauseButton} disabled={this.state.playButtonDisabled} onPress={() => this._playPause()} />
+          <Button title={this.state.playPauseButton} disabled={this.state.playButtonDisabled} onPress={() => this._playPause()} />
           <Button title={'Stop'} disabled={this.state.stopButtonDisabled} onPress={() => this._stop()} />
           <View ><Button style={styles.button} title={'Show My Result'} onPress={() => this.getresult()} /></View>
-
         </View>:
         <View>
          
@@ -408,7 +389,6 @@ getresult() {
           <Button title={'send to database'} onPress={() => this._send()} />
         </View> */}
         
-
         <View>
           <Text style={styles.errorMessage}>{this.state.error}</Text>
         </View>
@@ -418,10 +398,9 @@ getresult() {
         </View>
       
           <View  style={{padding:4 }}><Button style={styles.button} title={'Start plot'} onPress={() => this._soundWavePlotter()} /></View>
-
           <View style={{width:wp('80%') }}>
             <LineChart
-              style={styles.graph}
+              style={{height:hp('40%'),width:wp('100%') }}
               data={data}
               svg={{ stroke: 'rgb(134, 65, 244)' }}
               contentInset={{ top: 20, bottom: 20 }}
@@ -442,8 +421,7 @@ const styles = StyleSheet.create({
     flex:1,
     backgroundColor: 'gray',
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 5,
+    justifyContent: 'center'
   },
   scroll:{
     padding: 20,
@@ -465,7 +443,7 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: 'bold',
     textAlign: 'center',
-    padding: 5,
+    padding: 10,
   },
   errorMessage: {
     fontSize: 15,
@@ -474,12 +452,6 @@ const styles = StyleSheet.create({
     color: 'red'
   },
   button:{
-
-    width: '90%',
-    padding: 2
+    width: '50%',
   },
-  graph:{
-    height:hp('40%'),
-    width:wp('100%'),
-  }
 });
