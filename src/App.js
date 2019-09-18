@@ -12,6 +12,7 @@ import { Modal, Alert, Button, PermissionsAndroid, Platform, StyleSheet, Switch,
 import Slider from '@react-native-community/slider';
 import { Player, Recorder, MediaStates } from '@react-native-community/audio-toolkit';
 import { LineChart, Grid } from 'react-native-svg-charts'
+import Begin from './component/FrontAnimation'
 var RNFS = require('react-native-fs');
 import { db } from './config/firebase';
 var RNFetchBlob = require('react-native-fetch-blob').default
@@ -345,6 +346,7 @@ getresult() {
     return (
       <View style={styles.page}>
       <ScrollView style={styles.scroll}>
+        <Begin></Begin>
          <Modal
           animationType="slide"
           transparent={false}
@@ -360,24 +362,19 @@ getresult() {
           </Text></Modal>
         {!this.state.playButtonDisabled ?
         <View >
-          <Text style={styles.title}>
-            Playback
-          </Text>
-          <Button title={this.state.playPauseButton} disabled={this.state.playButtonDisabled} onPress={() => this._playPause()} />
-          <Button title={'Stop'} disabled={this.state.stopButtonDisabled} onPress={() => this._stop()} />
+           <View style={styles.slider}>
+          <Slider step={0.0001} disabled={this.state.playButtonDisabled} onValueChange={(percentage) => this._seek(percentage)} value={this.state.progress} />
           <View style={styles.settingsContainer}>
+
           <Switch
             onValueChange={(value) => this._toggleLooping(value)}
             value={this.state.loopButtonStatus} />
-          <Text>Toggle Looping</Text>
+                    </View>
+
         </View>
-        <View style={styles.slider}>
-          <Slider step={0.0001} disabled={this.state.playButtonDisabled} onValueChange={(percentage) => this._seek(percentage)} value={this.state.progress} />
-        </View>
-        <Text style={styles.title}>
-            Get My Result
-          </Text>
-          <View><Button style={styles.button} title={'Show My Result'} onPress={() => this.getresult()} /></View>
+          <Button style={{width:10}} title={this.state.playPauseButton} disabled={this.state.playButtonDisabled} onPress={() => this._playPause()} />
+          <Button title={'Stop'} disabled={this.state.stopButtonDisabled} onPress={() => this._stop()} />
+          <View ><Button style={styles.button} title={'Show My Result'} onPress={() => this.getresult()} /></View>
         </View>:
         <View>
          
@@ -395,19 +392,12 @@ getresult() {
         <View>
           <Text style={styles.errorMessage}>{this.state.error}</Text>
         </View>
-        <View>
-          <Text style={styles.title}>
-            Recording
-          </Text>
-        </View>
-        <View>
+      
+        <View style={{padding:4 }}>
           <Button style={styles.button} title={this.state.recordButton} disabled={this.state.recordButtonDisabled} onPress={() => this._toggleRecord()} />
         </View>
-        <View>
-          <Text style={styles.title}>
-              Graph
-          </Text>
-          <View><Button style={styles.button} title={'Start plot'} onPress={() => this._soundWavePlotter()} /></View></View>
+      
+          <View  style={{padding:4 }}><Button style={styles.button} title={'Start plot'} onPress={() => this._soundWavePlotter()} /></View>
           <View style={{width:wp('80%') }}>
             <LineChart
               style={{height:hp('40%'),width:wp('100%') }}
@@ -462,6 +452,6 @@ const styles = StyleSheet.create({
     color: 'red'
   },
   button:{
-    width: '80%'
+    width: '50%',
   },
 });
