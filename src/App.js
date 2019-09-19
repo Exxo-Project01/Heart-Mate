@@ -15,9 +15,9 @@ import { LineChart, Grid } from 'react-native-svg-charts'
 import Begin from './component/FrontAnimation'
 import Frontpage from './component/frontpage'
 var RNFS = require('react-native-fs');
-import { db } from './config/firebase';
+import { db, storage } from './config/firebase';
 var RNFetchBlob = require('react-native-fetch-blob').default
-const filename = 'test.mp3';
+const filename = 'test.wav';
 var userid;
 
 type Props = {};
@@ -262,18 +262,29 @@ getresult() {
         console.log(this.recorder.fsPath)
         if (!err) {
           //this.recorder.fspath shoud be the path to audio file
-          RNFetchBlob.fs.readFile(this.recorder.fsPath, 'base64')
-            .then((data) => {
-              db.ref('/users').push({
-                audio: data,
-                name: userid,
-                prediction: "positive"
-              }).then(data => {
-                Alert.alert('success')
-              })
-            }).catch(err => {
-              console.log(err)
-            })
+          // RNFetchBlob.fs.readFile(this.recorder.fsPath, 'base64')
+          //   .then((data) => {
+          //     console.log(data)
+          //     db.ref('/users').child(userid).set({
+          //       audio: data,
+          //       name: userid,
+          //       prediction: "positive"
+          //     }).then(data => {
+          //       Alert.alert('Audio sent for processing')
+                
+          //     })
+          //   }).catch(err => {
+          //     console.log(err)
+          //   })
+          const files = [this.recorder.fsPath];
+          files.map( filename => {
+            storage
+              .ref( `/users/` )
+              .getDownloadURL()
+              .then( url => {
+                console.log( "Got download url: ", url );
+              });
+        });
         }
       })
     }
