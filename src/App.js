@@ -16,11 +16,7 @@ import Begin from './component/FrontAnimation'
 var RNFS = require('react-native-fs');
 import { db, storage } from './config/firebase';
 var RNFetchBlob = require('react-native-fetch-blob').default
-<<<<<<< HEAD
 const filename = 'test.wav';
-=======
-const filename = 'test.mp3';
->>>>>>> 7f82a9f6e085db0164638c02a89ea2c1f21926a3
 var userid;
 
 type Props = {};
@@ -258,7 +254,6 @@ getresult() {
         console.log(this.recorder.fsPath)
         if (!err) {
           //this.recorder.fspath shoud be the path to audio file
-<<<<<<< HEAD
           // RNFetchBlob.fs.readFile(this.recorder.fsPath, 'base64')
           //   .then((data) => {
           //     console.log(data)
@@ -282,20 +277,6 @@ getresult() {
                 console.log( "Got download url: ", url );
               });
         });
-=======
-          RNFetchBlob.fs.readFile(this.recorder.fsPath, 'base64')
-            .then((data) => {
-              db.ref('/users').push({
-                audio: data,
-                name: userid,
-                prediction: "positive"
-              }).then(data => {
-                Alert.alert('success')
-              })
-            }).catch(err => {
-              console.log(err)
-            })
->>>>>>> 7f82a9f6e085db0164638c02a89ea2c1f21926a3
         }
       })
     }
