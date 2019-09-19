@@ -8,11 +8,12 @@
 
 import React, { Component } from 'react';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import { Modal, Alert, Button, PermissionsAndroid, Platform, StyleSheet, Switch, Text, View, ScrollView } from 'react-native';
+import { Modal, Alert, Button, PermissionsAndroid, Platform, StyleSheet, Switch, Text, View, ScrollView,Image } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Player, Recorder, MediaStates } from '@react-native-community/audio-toolkit';
 import { LineChart, Grid } from 'react-native-svg-charts'
 import Begin from './component/FrontAnimation'
+import Frontpage from './component/frontpage'
 var RNFS = require('react-native-fs');
 import { db, storage } from './config/firebase';
 var RNFetchBlob = require('react-native-fetch-blob').default
@@ -57,8 +58,15 @@ export default class App extends Component<Props, State> {
       loopButtonStatus: false,
       progress: 0,
       data: [10,12],
-      error: null
+      error: null,
+      show:false
     };
+  }
+  componentDidMount(){
+    setTimeout( () => {this.load()}, 5000);   
+  }
+  load(){
+    this.setState({show:true})
   }
 
   componentWillMount() {
@@ -92,7 +100,7 @@ export default class App extends Component<Props, State> {
   _updateState(err) {
     this.setState({
       playPauseButton: this.player && this.player.isPlaying ? 'Pause' : 'Play',
-      recordButton: this.recorder && this.recorder.isRecording ? 'Stop' : 'Record',
+      recordButton: this.recorder && this.recorder.isRecording ? 'Stop' : 'Start Record',
 
       stopButtonDisabled: !this.player || !this.player.canStop,
       playButtonDisabled: !this.player || !this.player.canPlay || this.recorder.isRecording,
@@ -356,73 +364,87 @@ getresult() {
     
     return (
       <View style={styles.page}>
-      <ScrollView style={styles.scroll}>
-        <Begin></Begin>
-         <Modal
-          animationType="slide"
-          transparent={false}
-          visible={this.state.modalVisible}
-          
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-            this.setState({modalVisible:false})
-
-          }}> 
-          <Text style={styles.title}>
-            {this.state.result}
-          </Text></Modal>
-        {!this.state.playButtonDisabled ?
-        <View >
-           <View style={styles.slider}>
-          <Slider step={0.0001} disabled={this.state.playButtonDisabled} onValueChange={(percentage) => this._seek(percentage)} value={this.state.progress} />
-          <View style={styles.settingsContainer}>
-
-          <Switch
-            onValueChange={(value) => this._toggleLooping(value)}
-            value={this.state.loopButtonStatus} />
-                    </View>
-
-        </View>
-          <Button title={this.state.playPauseButton} disabled={this.state.playButtonDisabled} onPress={() => this._playPause()} />
-          <Button title={'Stop'} disabled={this.state.stopButtonDisabled} onPress={() => this._stop()} />
-          <View ><Button style={styles.button} title={'Show My Result'} onPress={() => this.getresult()} /></View>
-        </View>:
-        <View>
-         
-        </View>
-        }
-        
-        
-        {/* <View>
-          <Text style={styles.title}>
-            Send
-          </Text>
-          <Button title={'send to database'} onPress={() => this._send()} />
-        </View> */}
-        
-        <View>
-          <Text style={styles.errorMessage}>{this.state.error}</Text>
-        </View>
-      
-        <View style={{padding:4 }}>
-          <Button style={styles.button} title={this.state.recordButton} disabled={this.state.recordButtonDisabled} onPress={() => this._toggleRecord()} />
-        </View>
-      
-          <View  style={{padding:4 }}><Button style={styles.button} title={'Start plot'} onPress={() => this._soundWavePlotter()} /></View>
-          <View style={{width:wp('80%') }}>
-            <LineChart
-              style={{height:hp('40%'),width:wp('100%') }}
-              data={data}
-              svg={{ stroke: 'rgb(134, 65, 244)' }}
-              contentInset={{ top: 20, bottom: 20 }}
-            >
-          <Grid />
-          </LineChart>
-
+        {this.state.show
+        ?
+        <View style={styles.page}>
+        <ScrollView style={styles.scroll}>
+          <Begin></Begin>
+           <Modal
+            animationType="slide"
+            transparent={false}
+            visible={this.state.modalVisible}
+            
+            onRequestClose={() => {
+              Alert.alert('Modal has been closed.');
+              this.setState({modalVisible:false})
+  
+            }}> 
+            <Text style={styles.title}>
+              {this.state.result}
+            </Text></Modal>
+          {!this.state.playButtonDisabled ?
+          <View >
+  
+             <View style={styles.slider}>
+            <Slider step={0.0001} disabled={this.state.playButtonDisabled} onValueChange={(percentage) => this._seek(percentage)} value={this.state.progress} />
+            <View style={styles.settingsContainer}>
+  
+            <Switch
+              onValueChange={(value) => this._toggleLooping(value)}
+              value={this.state.loopButtonStatus} />
+                      </View>
+  
+          </View>
+          <View style={{ flexDirection:'row' }}>
+            <Button title={this.state.playPauseButton} disabled={this.state.playButtonDisabled} onPress={() => this._playPause()} />
+            <Button title={'Stop'} disabled={this.state.stopButtonDisabled} onPress={() => this._stop()} />
             </View>
-     
-      </ScrollView>
+            <View ><Button style={styles.button} title={'Show My Result'} onPress={() => this.getresult()} /></View>
+          </View>:
+          <View>
+           
+          </View>
+          }
+          
+          
+          {/* <View>
+            <Text style={styles.title}>
+              Send
+            </Text>
+            <Button title={'send to database'} onPress={() => this._send()} />
+          </View> */}
+          
+          <View>
+            <Text style={styles.errorMessage}>{this.state.error}</Text>
+          </View>
+        
+          <View style={{padding:4 }}>
+            <Button title={this.state.recordButton} disabled={this.state.recordButtonDisabled} onPress={() => this._toggleRecord()} />
+          </View>
+        
+            <View  style={{padding:4 }}><Button style={styles.button} title={'Start plot'} onPress={() => this._soundWavePlotter()} /></View>
+            <View style={{width:wp('80%') }}>
+              <LineChart
+                style={{height:hp('40%'),width:wp('100%') }}
+                data={data}
+                svg={{ stroke: 'rgb(134, 65, 244)' }}
+                contentInset={{ top: 20, bottom: 20 }}
+              >
+            <Grid />
+            </LineChart>
+  
+              </View>
+       
+        </ScrollView>
+        </View>
+        :
+        <View style={styles.page}>
+        <Frontpage></Frontpage>
+       </View>
+        }
       </View>
+
+   
     );
   }
 }
@@ -430,8 +452,6 @@ getresult() {
 const styles = StyleSheet.create({
   page:{
     flex:1,
-    backgroundColor: 'gray',
-    alignItems: 'center',
     justifyContent: 'center'
   },
   scroll:{
@@ -461,8 +481,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     padding: 10,
     color: 'red'
-  },
-  button:{
-    width: '50%',
-  },
+  }
 });
