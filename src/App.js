@@ -249,7 +249,8 @@ getresult() {
       recordAudioRequest = new Promise(function (resolve, reject) { resolve(true); });
     }
 
-    userid=this.guidGenerator()
+    //userid=this.guidGenerator()
+    userid="Joe1234"
     readfileRequest.then((hasPermission) => {
       if (!hasPermission) {
         this.setState({
@@ -276,15 +277,22 @@ getresult() {
           //   }).catch(err => {
           //     console.log(err)
           //   })
-          const files = [this.recorder.fsPath];
-          files.map( filename => {
-            storage
-              .ref( `/users/` )
-              .getDownloadURL()
-              .then( url => {
-                console.log( "Got download url: ", url );
-              });
-        });
+          const files = this.recorder.fsPath;
+          console.log(files)
+          const task = storage.ref().put(files);
+          task.then((snapshot) => {
+            console.log(snapshot.downloadURL);
+          });
+        
+        //   files.map( filename => {
+        //     storage
+        //       .ref()
+        //       .child('users/'+userid)
+        //       .getDownloadURL()
+        //       .then( url => {
+        //         console.log( "Got download url: ", url );
+        //       });
+        // });
         }
       })
     }
